@@ -1,0 +1,43 @@
+section .data
+    number db 5             ; Define the number for which we want to calculate the factorial
+    result dd 1             ; Variable to store the result, initialized to 1
+
+section .bss
+    temp resb 1             ; Temporary storage for calculations
+
+section .text
+    global _start
+
+_start:
+    ; Load the number into AL register
+    mov al, [number]
+    
+    ; Check if the number is zero
+    cmp al, 0
+    je end                  ; If the number is zero, jump to end
+
+    ; Initialize the result to 1
+    mov eax, 1
+
+calculate_factorial:
+    ; Multiply the result by the current number
+    imul eax, eax, [number]
+    
+    ; Decrement the number
+    dec byte [number]
+    
+    ; Check if the number is zero
+    cmp byte [number], 0
+    jne calculate_factorial ; If the number is not zero, continue the loop
+
+    ; Store the result
+    mov [result], eax
+
+end:
+    ; Exit the program
+    mov eax, 1              ; System call number (sys_exit)
+    xor ebx, ebx            ; Exit status (0)
+    int 0x80                ; Call kernel
+
+section .data
+result_message db 'The factorial is: ', 0
